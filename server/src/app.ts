@@ -1,13 +1,16 @@
 import express, { Request } from "express";
-import crypto from "crypto";
+import cryptoRandomString from "crypto-random-string";
 import bodyParser from "body-parser";
 import { URLMetaOutput, URLRequest, URLMeta } from "./models";
+import mongoose from "mongoose";
 
 const router = express();
 const port = 3000;
 
-router.use(bodyParser.urlencoded({ extended: false })); // Parses urlencoded bodies
-router.use(bodyParser.json()); // Send JSON responses
+mongoose.connect("mongodb://localhost:27017");
+
+router.use(bodyParser.urlencoded({ extended: false }));
+router.use(bodyParser.json());
 
 router.get("/api", (req, res) => {
   res.send("The sedulous hyena ate the antelope!");
@@ -16,6 +19,8 @@ router.get("/api", (req, res) => {
 interface ShortyError {
   error: string;
 }
+
+router.get;
 
 router.post(
   "/api/shorty",
@@ -29,13 +34,23 @@ router.post(
       return res.status(400).send({ error: "FullURL is required!" });
     }
 
-    const urlMeta = new URLMeta({ fullURL, shortURL: crypto.randomBytes(5) });
+    // TODO: add URL validation
+
+    const urlMeta = new URLMeta({
+      fullURL,
+      shortURL: cryptoRandomString({ length: 5 }),
+    });
+
+    const documents = await URLMeta.find({});
+
+    console.log(documents);
 
     try {
       const urlMetaOutput = await urlMeta.save();
 
       return res.send(urlMetaOutput);
-    } catch {
+    } catch (e) {
+      console.log(e.message);
       return res.status(500).send({ error: "Failed to save URL." });
     }
   }
