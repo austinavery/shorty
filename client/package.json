@@ -1,5 +1,5 @@
 {
-  "name": "shortigator-client",
+  "name": "shorty-client",
   "version": "1.0.0",
   "description": "React app that allows users to generate shortened URLs",
   "scripts": {

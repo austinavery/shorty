@@ -13,6 +13,7 @@ type Status =
     }
   | {
       type: "Success";
+      shortURL: string;
     };
 
 const URLStatus: React.FC<{ status: Status }> = ({ status }) => {
@@ -24,7 +25,11 @@ const URLStatus: React.FC<{ status: Status }> = ({ status }) => {
     case "Loading":
       return <>Loading...</>;
     case "Success":
-      return <>{"Success!"}</>;
+      return (
+        <span>
+          <a href={status.shortURL}>{`${window.location}${status.shortURL}`}</a>
+        </span>
+      );
   }
 };
 
@@ -54,7 +59,7 @@ export const App: React.FC = () => {
       if (response.ok) {
         const json = await response.json();
         console.log({ json });
-        setStatus({ type: "Success" });
+        setStatus({ type: "Success", shortURL: json.shortURL });
 
         return;
       }
@@ -66,18 +71,31 @@ export const App: React.FC = () => {
   };
 
   return (
-    <form onSubmit={onSubmit}>
-      <URLStatus status={status} />
-      <label htmlFor="url">URL:</label>
-      <input
-        type="text"
-        id="url"
-        name="URL"
-        onChange={(e) => setFullURL(e.target.value)}
-      />
-      <button type="submit" onClick={onSubmit}>
-        Shortify!
-      </button>
-    </form>
+    <div>
+      <header>
+        <h1 style={{ marginBottom: 0 }}>Shorty</h1>
+        <p style={{ marginTop: 0 }}>A URL shortener.</p>
+      </header>
+      <form onSubmit={onSubmit} autoComplete="off">
+        <div>
+          <label htmlFor="url">URL:</label>
+        </div>
+        <input
+          type="text"
+          id="url"
+          name="URL"
+          onChange={(e) => setFullURL(e.target.value)}
+        />
+        <div>
+          {/* TODO: move position of this message based off of `status` value. */}
+          <URLStatus status={status} />
+        </div>
+        <div style={{ paddingTop: 10 }}>
+          <button type="submit" onClick={onSubmit}>
+            Shortify!
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
